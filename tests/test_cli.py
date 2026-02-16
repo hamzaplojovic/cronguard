@@ -25,13 +25,13 @@ def _strip_ansi(text: str) -> str:
 def test_version_flag() -> None:
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert __version__ in result.output
+    assert __version__ in _strip_ansi(result.output)
 
 
 def test_version_short_flag() -> None:
     result = runner.invoke(app, ["-V"])
     assert result.exit_code == 0
-    assert __version__ in result.output
+    assert __version__ in _strip_ansi(result.output)
 
 
 # ---------------------------------------------------------------------------
@@ -68,7 +68,7 @@ def test_run_failing_command() -> None:
 
 def test_run_json_output() -> None:
     result = runner.invoke(app, ["run", "echo json-test", "--json"])
-    parsed = json.loads(result.output)
+    parsed = json.loads(_strip_ansi(result.output))
     assert parsed["command"] == "echo json-test"
     assert parsed["ok"] is True
     assert parsed["exit_code"] == 0
@@ -76,7 +76,7 @@ def test_run_json_output() -> None:
 
 def test_run_json_failing() -> None:
     result = runner.invoke(app, ["run", "bash -c 'exit 2'", "--json"])
-    parsed = json.loads(result.output)
+    parsed = json.loads(_strip_ansi(result.output))
     assert parsed["ok"] is False
     assert parsed["exit_code"] == 2
 
@@ -126,7 +126,7 @@ def test_run_with_label() -> None:
 
 def test_run_label_in_json() -> None:
     result = runner.invoke(app, ["run", "echo hi", "--label", "my-job", "--json"])
-    parsed = json.loads(result.output)
+    parsed = json.loads(_strip_ansi(result.output))
     assert parsed["label"] == "my-job"
 
 
