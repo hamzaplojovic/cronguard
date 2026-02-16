@@ -1,0 +1,130 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cronguard"
+version = "0.1.0"
+description = "Wrap cron jobs with timing, output capture, and exit code tracking"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [
+    { name = "Hamza Plojovic", email = "hamza@hamzaplojovic.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+keywords = ["cron", "jobs", "monitoring", "wrapper", "cli", "devops"]
+dependencies = [
+    "typer>=0.12.0",
+    "rich>=13.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.0",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/hamzaplojovic/cronguard"
+Repository = "https://github.com/hamzaplojovic/cronguard"
+Issues = "https://github.com/hamzaplojovic/cronguard/issues"
+
+[project.scripts]
+cronguard = "cronguard.cli:app"
+
+# =============================================================================
+# Hatch
+# =============================================================================
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cronguard"]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.12", "3.13"]
+
+# =============================================================================
+# Ruff
+# =============================================================================
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "SIM",    # flake8-simplify
+    "TCH",    # flake8-type-checking
+    "PTH",    # flake8-use-pathlib
+    "ERA",    # eradicate
+    "RUF",    # Ruff-specific rules
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["cronguard"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ARG001", "TC003"]
+"src/cronguard/cli.py" = ["TC003", "UP045"]
+
+# =============================================================================
+# Pytest
+# =============================================================================
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = [
+    "-ra",
+    "-q",
+    "--strict-markers",
+    "--strict-config",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
+# =============================================================================
+# Coverage
+# =============================================================================
+
+[tool.coverage.run]
+source = ["src/cronguard"]
+branch = true
+parallel = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+show_missing = true
